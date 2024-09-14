@@ -28,3 +28,4 @@ ggplot(sia2, aes(x=d13C,y=d15N,colour=Species))+
   theme(axis.title = element_text(size=rel(2.0)),
         axis.text = element_text(size=rel(1.5)))
 
+ 
