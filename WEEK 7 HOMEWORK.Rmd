@@ -1,0 +1,86 @@
+---
+title: "WEEK 7 HOMEWORK"
+author: "Haoshu Hsu"
+date: "2024-10-27"
+output: html_document
+---
+
+```{r}
+library(ggplot2)
+```
+
+**create pdf in my working directory**
+```{r}
+setwd("D:/R_practice/repository")
+pdf(file = "week7 homework-1.pdf", paper = "A4")
+```
+
+**loading data**
+```{r}
+rairuoho <- read.table("Data/rairuoho.txt", header = TRUE, sep = "\t")
+```
+
+**turn day into numeric value of 3-8**
+```{r}
+rairuoho$day <- as.numeric(gsub("day", "", rairuoho$day))
+```
+
+**calculate r-squared for "enriched"**
+```{r}
+enriched_lm <- lm(length ~ as.numeric(day), data = subset(rairuoho, treatment == "enriched"))
+enriched_r_squared <- summary(enriched_lm)$r.squared
+```
+
+**calculate r-squared for "water"**
+```{r}
+water_lm <- lm(length ~ as.numeric(day), data = subset(rairuoho, treatment == "water"))
+water_r_squared <- summary(water_lm)$r.squared
+```
+
+**t test for the last day**
+```{r}
+t_test_result <- t.test(length ~ treatment, data = subset(rairuoho, day == 8))
+p_value <- t_test_result$p.value
+```
+
+**plot**
+```{r}
+rairuoho_plot <- ggplot(data = rairuoho, aes(x = day, y = length, 
+                            color = treatment, 
+                            group = treatment, 
+                            shape = treatment)
+       ) +
+  geom_point(alpha = 0.6, size = 2) + 
+  geom_smooth(method = "loess", se = TRUE, aes(fill = treatment), alpha = 0.2) +  
+  labs(x = "Time (day)", y = "Length (cm)", 
+       title = "Growth Difference: Enriched vs Water \n R12241201") +  
+  scale_color_manual(values = c("enriched" = "red", "water" = "blue")
+                     ) +  
+  scale_fill_manual(values = c("enriched" = "red", "water" = "blue")
+                    ) +  
+  geom_jitter(data=rairuoho, mapping=aes(x=day, y=length), size=1.5) +
+  theme_grey() +  
+  theme(legend.position = "right", 
+        plot.title = element_text(hjust = 0.5)
+        ) +
+  annotate("text", x = 4, y = 140, 
+           label = paste("R² (Enriched) =", 
+                         round(enriched_r_squared, 2)), 
+           color = "red") +
+  annotate("text", x = 4, y = 130, 
+           label = paste("R² (Water) =", 
+                         round(water_r_squared, 2)), 
+           color = "blue") +
+  annotate("text", x = 4.5, y = 120, 
+           label = paste("Difference between treatment in day 8 \n p-value =", 
+                         round(p_value, 4)), 
+           color = "black") 
+
+rairuoho_plot
+```
+
+**export**
+```{r}
+dev.off()
+```
+
