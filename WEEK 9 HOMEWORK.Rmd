@@ -37,7 +37,6 @@ grow <- function(start_1, start_2, competition_coefficients) { #make competition
     lines(N2~generation,typ="b",col=2)}
   text(15, 110, paste("Alpha =", round(alpha, 2)), col = "black", cex = 1.2)
   legend("topleft", legend = c("Species 1", "Species 2"), col = c("black", "red"), lty = 1, pch = 1)
-  text(15, 110, paste("Alpha =", round(alpha, 2)), col = "black", cex = 1.2)
 }
 ```
 
