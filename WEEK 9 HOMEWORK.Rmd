@@ -1,0 +1,61 @@
+---
+title: "WEEK 9 HOMEWORK"
+author: "Haoshu Hsu"
+date: "2024-11-10"
+output: html_document
+---
+```{r}
+library(animation)
+```
+
+**create function**
+```{r}
+grow <- function(start_1, start_2, competition_coefficients) { #make competition_coefficients flexible
+  num_gen <- 30
+  N1 <- rep(0, num_gen)
+  N2 <- rep(0, num_gen)
+  generation <- 1:num_gen
+  growth.rate <- 1.2 
+  K1 <- 100
+  K2 <- 120
+  alpha <- competition_coefficients #let the competition_coefficients of the 2 species the same
+  N1[1] <- start_1
+  N2[1] <- start_2
+  
+  for (i in 2:num_gen) {
+    N1[i] <- N1[i-1] + (growth.rate * N1[i-1] * ((K1 - N1[i-1] - (alpha * N2[i-1])) / K1))
+    N2[i] <- N2[i-1] + (growth.rate * N2[i-1] * ((K2 - N2[i-1] - (alpha * N1[i-1])) / K2))
+  }
+  
+  if (N1[1]>0){
+    plot(N1~generation,typ="b",ylim=c(0,120),ylab="N") 
+  }  else {
+    plot(N1~generation,typ="n",ylim=c(0,120),ylab="N") 
+  }
+  print(N2[1])
+  if (N2[1]>0){
+    lines(N2~generation,typ="b",col=2)}
+  text(15, 110, paste("Alpha =", round(alpha, 2)), col = "black", cex = 1.2)
+  legend("topleft", legend = c("Species 1", "Species 2"), col = c("black", "red"), lty = 1, pch = 1)
+  text(15, 110, paste("Alpha =", round(alpha, 2)), col = "black", cex = 1.2)
+}
+```
+
+**plotting**
+```{r}
+par(mar=c(3, 4, 1, 1), mfrow=c(3, 1), las=1)
+grow(1, 0, 0.8) # first plot：species 1 only
+grow(0, 1, 0.8) # second plot：species 2 only
+grow(1, 2, 0.8) # third plot：competition
+```
+
+**animation for competing under different alpha**
+```{r}
+saveGIF({
+  for (i in seq(0.5, 1.5, by = 0.1)) {
+    grow(1, 2, i)
+  }
+}, interval = 0.5, movie.name = "competition_alpha_variation.gif")
+
+```
+
